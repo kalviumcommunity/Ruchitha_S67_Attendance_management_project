@@ -1,46 +1,47 @@
 package com.school;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main{
+    public static void displaySchoolDirectory(RegistrationService regService) {
+        System.out.println("=== SCHOOL DIRECTORY ===");
+        List<Person> people = regService.getAllPeople();
+        for (Person p : people) {
+            p.displayDetails();
+        }
+    }
     public static void main(String[] args) {
 
-        // Students
-        List<Student> allStudents = new ArrayList<>();
-        Student s1 = new Student("Alice", "Grade 10");
-        Student s2 = new Student("Bob", "Grade 9");
-        allStudents.add(s1);
-        allStudents.add(s2);
-
-        // Courses
-        List<Course> allCourses = new ArrayList<>();
-        Course c1 = new Course("Mathematics");
-        Course c2 = new Course("Science");
-        allCourses.add(c1);
-        allCourses.add(c2);
-
-        // Services
         FileStorageService storage = new FileStorageService();
-        AttendanceService attendanceService = new AttendanceService(storage);
+        RegistrationService regService = new RegistrationService(storage);
+        AttendanceService attendanceService = new AttendanceService(storage, regService);
 
-        // MARK ATTENDANCE (different overloaded methods)
-        attendanceService.markAttendance(s1, c1, "Present");        // method #1
-        attendanceService.markAttendance(s2, c2, "Absent");         // method #1
-        attendanceService.markAttendance(s1, c2, "Late");           // invalid
-        attendanceService.markAttendance(
-                s1.getId(), c1.getCourseId(), "Present",
-                allStudents, allCourses
-        ); // method #2 (IDs + lookup)
+        // REGISTER PEOPLE
+        Student s1 = regService.registerStudent("Alice", "Grade 10");
+        Student s2 = regService.registerStudent("Bob", "Grade 9");
 
-        // DISPLAY LOGS
-        attendanceService.displayAttendanceLog();        // ALL records
-        attendanceService.displayAttendanceLog(s1);      // For student
-        attendanceService.displayAttendanceLog(c2);      // For course
+        Teacher t1 = regService.registerTeacher("Mr. Sharma", "Mathematics");
+        Staff st1 = regService.registerStaff("Ravi", "Lab Assistant");
 
-        // SAVE attendance
+        // COURSES
+        Course c1 = regService.createCourse("Mathematics");
+        Course c2 = regService.createCourse("Science");
+
+        // DISPLAY DIRECTORY
+        displaySchoolDirectory(regService);
+
+        // MARK ATTENDANCE (IDs only)
+        attendanceService.markAttendance(s1.getId(), c1.getCourseId(), "Present");
+        attendanceService.markAttendance(s2.getId(), c2.getCourseId(), "Absent");
+        attendanceService.markAttendance(s1.getId(), c2.getCourseId(), "Late");
+
+        // DISPLAY ATTENDANCE
+        attendanceService.displayAttendanceLog();
+
+        // SAVE EVERYTHING
+        regService.saveAllRegistrations();
         attendanceService.saveAttendanceData();
 
-        System.out.println("Attendance data saved to attendance_log.txt");
+        System.out.println("Data saved successfully.");
     }
 }
