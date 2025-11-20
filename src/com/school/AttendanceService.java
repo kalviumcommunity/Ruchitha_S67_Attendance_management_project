@@ -7,10 +7,12 @@ public class AttendanceService {
 
     private List<AttendanceRecord> attendanceLog;
     private FileStorageService storageService;
+    private RegistrationService registrationService;
 
-    public AttendanceService(FileStorageService storageService) {
+    public AttendanceService(FileStorageService storageService, RegistrationService registrationService) {
         this.attendanceLog = new ArrayList<>();
         this.storageService = storageService;
+        this.registrationService = registrationService;
     }
 
     // 1. First overloaded method (direct objects)
@@ -20,16 +22,14 @@ public class AttendanceService {
     }
 
     // 2. Overloaded method (IDs + lookup)
-    public void markAttendance(int studentId, int courseId, String status,
-                               List<Student> allStudents, List<Course> allCourses) {
-
-        Student student = findStudentById(studentId, allStudents);
-        Course course = findCourseById(courseId, allCourses);
+    public void markAttendance(int studentId, int courseId, String status) {
+        Student student = registrationService.findStudentById(studentId);
+        Course course = registrationService.findCourseById(courseId);
 
         if (student != null && course != null) {
             markAttendance(student, course, status); // reuse method #1
         } else {
-            System.out.println("Error: Could not find Student or Course for attendance marking.");
+            System.out.println("Error: Invalid student/course ID");
         }
     }
 
@@ -41,39 +41,11 @@ public class AttendanceService {
         return null;
     }
 
-    // Helper: find course
-    private Course findCourseById(int id, List<Course> courses) {
-        for (Course c : courses) {
-            if (c.getCourseId() == id) return c;
-        }
-        return null;
-    }
-
-    // Display all records
     public void displayAttendanceLog() {
-        System.out.println("=== FULL ATTENDANCE LOG ===");
-        for (AttendanceRecord r : attendanceLog) {
-            r.displayRecord();
-        }
+        System.out.println("=== ATTENDANCE LOG ===");
+        attendanceLog.forEach(AttendanceRecord::displayRecord);
     }
 
-    // Display for a specific student
-    public void displayAttendanceLog(Student student) {
-        System.out.println("=== ATTENDANCE FOR STUDENT: " + student.getName() + " ===");
-        attendanceLog.stream()
-            .filter(r -> r.getStudent().getId() == student.getId())
-            .forEach(AttendanceRecord::displayRecord);
-    }
-
-    // Display for a specific course
-    public void displayAttendanceLog(Course course) {
-        System.out.println("=== ATTENDANCE FOR COURSE: " + course.getCourseName() + " ===");
-        attendanceLog.stream()
-            .filter(r -> r.getCourse().getCourseId() == course.getCourseId())
-            .forEach(AttendanceRecord::displayRecord);
-    }
-
-    // Save to file
     public void saveAttendanceData() {
         storageService.saveData(attendanceLog, "attendance_log.txt");
     }
