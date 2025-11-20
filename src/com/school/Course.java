@@ -1,0 +1,20 @@
+package com.school;
+
+public class Course{
+    private static int nextCourseIdCounter = 101;
+    int courseId;
+    String courseName;
+
+    // Constructor
+    public Course(String courseNmae){
+        this.courseId = nextCourseIdCounter++;
+        this.courseName = courseNmae;
+    }
+
+    // Method to display details
+    public void displayDetails(){
+        System.out.println("Course ID: C"+courseId);
+        System.out.println("Course Name: "+courseName);
+        System.out.println("------------------------");
+    }
+}
