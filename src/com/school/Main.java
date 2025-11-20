@@ -2,21 +2,19 @@ package com.school;
 
 public class Main{
     public static void main(String[] args) {
-        Student[] students = new Student[2];
+        
+        Student s1 = new Student("Alice");
+        Student s2 = new Student("Bob");
+        Student s3 = new Student("Charlie");
+        Student s4 = new Student("David");
 
-        students[0] = new Student();
-        students[0].setDetails(1, "Alice");
+        Student[] students = {s1, s2, s3, s4};
 
-        students[1] = new Student();
-        students[1].setDetails(2, "Bob");
+        Course c1 = new Course("Mathematics");
+        Course c2 = new Course("Science");
+        Course c3 = new Course("English");
 
-        Course[] courses = new Course[2];
-
-        courses[0] = new Course();
-        courses[0].setDetails(101, "Mathematics");
-
-        courses[1] = new Course();
-        courses[1].setDetails(102, "Science");
+        Course[] courses = {c1, c2, c3};
 
         System.out.println("=== Student Details ===");
         for(Student s : students){
