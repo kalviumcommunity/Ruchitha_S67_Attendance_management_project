@@ -5,36 +5,26 @@ import java.util.List;
 
 public class Main{
     public static void main(String[] args) {
-        
-        Student s1 = new Student("Alice", "Grade 10");
-        Student s2 = new Student("Bob", "Grade 9");
+        // Student objects
+        List<Student> students = new ArrayList<>();
+        students.add(new Student("Alice", "Grade 10"));
+        students.add(new Student("Bob", "Grade 9"));
 
-        Teacher t1 = new Teacher("Mr. Sharma", "Mathematics");
-        Staff st1 = new Staff("Ravi", "Lab Assistant");
+        // Courses
+        List<Course> courses = new ArrayList<>();
+        courses.add(new Course("Mathematics"));
+        courses.add(new Course("Science"));
 
-        // Display details
-        System.out.println("=== Person Hierarchy Details ===");
-        s1.displayDetails();
-        s2.displayDetails();
-        t1.displayDetails();
-        st1.displayDetails();
+        // Attendance
+        List<AttendanceRecord> records = new ArrayList<>();
+        records.add(new AttendanceRecord(students.get(0).getId(), courses.get(0).getCourseId(), "Present"));
+        records.add(new AttendanceRecord(students.get(1).getId(), courses.get(1).getCourseId(), "Absent"));
+        records.add(new AttendanceRecord(students.get(0).getId(), courses.get(1).getCourseId(), "Late")); // invalid
 
-        // Attendance Logging
-        List<AttendanceRecord> attendanceLog = new ArrayList<>();
-
-        // Valid attendance
-        AttendanceRecord a1 = new AttendanceRecord(s1.getId(), 101, "Present");
-        AttendanceRecord a2 = new AttendanceRecord(s2.getId(), 102, "Absent");
-        AttendanceRecord a3 = new AttendanceRecord(s1.getId(), 102, "Late");  //invalid
-
-        attendanceLog.add(a1);
-        attendanceLog.add(a2);
-        attendanceLog.add(a3);
-
-        // Display all attendance
-        System.out.println("=== Attendance Log ===");
-        for (AttendanceRecord ar : attendanceLog) {
-            ar.displayRecord();
-        }
+        // Save to files
+        FileStorageService storage = new FileStorageService();
+        storage.saveData(students, "students.txt");
+        storage.saveData(courses, "courses.txt");
+        storage.saveData(records, "attendance_log.txt");
     }
 }
