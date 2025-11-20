@@ -4,66 +4,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main{
-    // POLYMORPHISM DEMO
-    public static void displaySchoolDirectory(List<Person> people) {
-        System.out.println("=== School Directory ===");
-        for (Person p : people) {
-            p.displayDetails();    // runtime polymorphism
-        }
-    }
     public static void main(String[] args) {
-        
-        // Create Student, Teacher, Staff
+
+        // Students
+        List<Student> allStudents = new ArrayList<>();
         Student s1 = new Student("Alice", "Grade 10");
         Student s2 = new Student("Bob", "Grade 9");
-
-        Teacher t1 = new Teacher("Mr. Sharma", "Mathematics");
-        Staff st1 = new Staff("Ravi", "Lab Assistant");
-
-        // Polymorphic list
-        List<Person> schoolPeople = new ArrayList<>();
-        schoolPeople.add(s1);
-        schoolPeople.add(s2);
-        schoolPeople.add(t1);
-        schoolPeople.add(st1);
-
-        // Display polymorphism
-        displaySchoolDirectory(schoolPeople);
+        allStudents.add(s1);
+        allStudents.add(s2);
 
         // Courses
+        List<Course> allCourses = new ArrayList<>();
         Course c1 = new Course("Mathematics");
         Course c2 = new Course("Science");
+        allCourses.add(c1);
+        allCourses.add(c2);
 
-        // Attendance Records
-        List<AttendanceRecord> records = new ArrayList<>();
-        records.add(new AttendanceRecord(s1, c1, "Present"));
-        records.add(new AttendanceRecord(s2, c2, "Absent"));
-        records.add(new AttendanceRecord(s1, c2, "Late"));   // invalid → becomes "Invalid"
-
-        System.out.println("=== Attendance Log ===");
-        for (AttendanceRecord rec : records) {
-            rec.displayRecord();
-        }
-
-        // STORAGE SERVICE
+        // Services
         FileStorageService storage = new FileStorageService();
+        AttendanceService attendanceService = new AttendanceService(storage);
 
-        // Filter students from schoolPeople using instanceof
-        List<Student> studentsToSave = new ArrayList<>();
-        for (Person p : schoolPeople) {
-            if (p instanceof Student) {
-                studentsToSave.add((Student) p);
-            }
-        }
+        // MARK ATTENDANCE (different overloaded methods)
+        attendanceService.markAttendance(s1, c1, "Present");        // method #1
+        attendanceService.markAttendance(s2, c2, "Absent");         // method #1
+        attendanceService.markAttendance(s1, c2, "Late");           // invalid
+        attendanceService.markAttendance(
+                s1.getId(), c1.getCourseId(), "Present",
+                allStudents, allCourses
+        ); // method #2 (IDs + lookup)
 
-        // Save to files
-        storage.saveData(studentsToSave, "students.txt");
+        // DISPLAY LOGS
+        attendanceService.displayAttendanceLog();        // ALL records
+        attendanceService.displayAttendanceLog(s1);      // For student
+        attendanceService.displayAttendanceLog(c2);      // For course
 
-        List<Course> courseList = new ArrayList<>();
-        courseList.add(c1);
-        courseList.add(c2);
-        storage.saveData(courseList, "courses.txt");
+        // SAVE attendance
+        attendanceService.saveAttendanceData();
 
-        storage.saveData(records, "attendance_log.txt");
+        System.out.println("Attendance data saved to attendance_log.txt");
     }
 }
