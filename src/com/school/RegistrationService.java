@@ -39,10 +39,23 @@ public class RegistrationService {
         return st;
     }
 
-    public Course createCourse(String courseName) {
-        Course c = new Course(courseName);
+    public Course createCourse(String courseName, int capacity) {
+        Course c = new Course(courseName, capacity);
         courses.add(c);
         return c;
+    }
+
+    public boolean enrollStudentInCourse(Student student, Course course) {
+        boolean success = course.addStudent(student);
+
+        if (success) {
+            System.out.println("Enrolled " + student.getName() + " in " + course.getCourseName());
+        } else {
+            System.out.println("Failed to enroll " + student.getName() +
+                            " — course full (" + course.getCapacity() + " max)");
+        }
+
+        return success;
     }
 
     // GETTERS
